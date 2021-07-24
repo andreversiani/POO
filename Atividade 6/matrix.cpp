@@ -4,7 +4,9 @@
 #include <string>
 
 using namespace std;
-// contrutor default - cria uma matriz vazia com nRows = nCols = 0  
+
+template class Matrix<int>;
+template class Matrix<double>;
 
 template<class Template>
 Matrix<Template>::Matrix(){
@@ -35,17 +37,10 @@ Matrix<Template>::Matrix(int rows, int cols) {
 	this->nRows = rows;
 	this->nCols = cols;
 	this->m = new Template*[rows];
-  for (int i = 0; i < eows; i++) {
+  for (int i = 0; i < rows; i++) {
     this->m[i] = new Template[cols];
   }
 }
-
-// destrutor
-template<class Template>
-Matrix<Template>::~Matrix() {
-  
-}
-
 
 // obtem o numero de linhas
 template<class Template>
@@ -158,13 +153,13 @@ Template Matrix<Template>::get(int row, int col) const {
   if (row >= 1 && col >= 1) return this->m[row - 1][col - 1];
   else {
     cout << "Essa linha nao existe";
-    return new Template();
+    return Template();
   }
 }
 
 template<class Template>
 Matrix<Template> Matrix<Template>::operator- (const Matrix<Template>& m) {
-  Matrix<Template> m1 = copy(this);
+  Matrix<Template> m1 = copy(*this);
   for (int i = 0; i < m1.getRows(); i++) {
       for (int j = 0; j < m1.getCols(); j++) {
         m1.m[i][j] -= m.m[i][j];
@@ -180,7 +175,7 @@ Matrix<Template> Matrix<Template>::operator-= (const Matrix<Template>& m) {
 
 template<class Template>
 Matrix<Template> Matrix<Template>::operator+ (const Matrix<Template>& m) {
-  Matrix m1 = copy(this);
+  Matrix m1 = copy(*this);
   for (int i = 0; i < m1.getRows(); i++) {
       for (int j = 0; j < m1.getCols(); j++) {
         m1.m[i][j] += m.m[i][j];
@@ -196,13 +191,13 @@ Matrix<Template> Matrix<Template>::operator+= (const Matrix<Template>& m) {
 
 template<class Template>
 Matrix<Template> Matrix<Template>::operator* (const Matrix<Template>& m) {
-  Matrix m1 = copy(this);
+  Matrix m1 = copy(*this);
   Matrix<Template> result = Matrix(this->getRows(), m.getCols());
   
-  for(int i = 0; i < this->getRows(); ++i)
+  for(int i = 0; i < m1.getRows(); ++i)
     for(int j = 0; j < m.getCols(); ++j)
-      for(int k = 0; k < this->getCols(); ++k) {
-        result.m[i][j] += this->m[i][k] * m.m[k][j];
+      for(int k = 0; k < m1.getCols(); ++k) {
+        result.m[i][j] += m1.m[i][k] * m.m[k][j];
     }
 
   return result;
@@ -266,7 +261,7 @@ std::istream& operator>> (std::istream& in, const Matrix<Template>& m) {
 
 template<class Template>
 Matrix<Template> Matrix<Template>::operator~ () {
-  Matrix<Template> m = copy(this);
+  Matrix<Template> m = copy(*this);
   return m.transpose();
 }
 
@@ -277,36 +272,11 @@ Template& Matrix<Template>::operator() (const int row, const int col) {
 
 template<class Template>
 Matrix<Template> copy(Matrix<Template> m) {
-  Matrix<Template> m1(m.getRows(), m.getCols())
-  for (int i = 0; i < m.getRows(); i++){
-    for (int j = 0; j < m.getCols(); j++) {
-      m1[i][j] = m[i][j];
+  Matrix<Template> m1(m.getRows(), m.getCols());
+  for (int i = 0; i < m1.getRows(); i++) {
+    for (int j = 0; j < m1.getCols(); j++) {
+      m1.m[i][j] = m.m[i][j];
     }
   }
   return m1;
-}
-
-int main()
-{
-    Matrix<double> Y, W;
-    Matrix<double> X(3,1), A(3,3), C(3,3);
-    Matrix<double> Z(3,2,7.0);
-    
-    // operadores a serem implementados em sua classe:
-    
-    A(2,1) = 10;                               // altera o valor de uma posição de A
-    C = A + A;                                  // Soma
-    C -= A;                                     // Subtração       
-    A = C - A;                                  // Subtração
-    A += A;                                   // Soma
-    A = ~C;                                  // A é igual a transposta de C
-    X *= 2;                                   // multiplicação por uma constante
-    C = A*X;                                         // multiplicação de matrizes
-    C *= X;                                          // multiplicação de matrizes
-    cout << (A == C) << endl;                              // verifica a igualdade entre A e C
-    cout << (X != Y) << endl;                           // verifica a desigualdade entre A e C
-    cout << Z << endl;
-    cin >> Y;                         // impressão de matrizes
-
-    return 0;
 }

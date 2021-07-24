@@ -15,8 +15,6 @@ class Matrix {
         Matrix(int rows, int cols, Template elem);
         Matrix(int rows, int cols);
         // destrutor
-        ~Matrix();
-        Matrix<Template> operator~ ();
     
         // basic getters
         int getRows() const;
@@ -40,6 +38,7 @@ class Matrix {
         Matrix<Template> operator*= (const Matrix<Template>& m);
         Matrix<Template> operator*= (const int& num);
         Template& operator() (const int row, const int col);
+        Matrix<Template> operator~ ();
         bool operator== (const Matrix<Template>& m);
         bool operator!= (const Matrix<Template>& m);
         friend std::ostream& operator<< (std::ostream& out, const Matrix<Template>& m);
