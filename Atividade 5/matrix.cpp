@@ -5,7 +5,9 @@
 
 using namespace std;
 // contrutor default - cria uma matriz vazia com nRows = nCols = 0  
-Matrix::Matrix(){
+
+template<class Template>
+Matrix<Template>::Matrix(){
   this->nRows = 0;
   this->nCols = 0;
 }
@@ -13,52 +15,54 @@ Matrix::Matrix(){
 // contrutor parametrico 1 - cria uma matriz com nRows  = rows, nCols = cols e 
 // com todos os elementos iguais a elem (double)
 
-Matrix::Matrix(int rows, int cols, double elem)
+template<class Template>
+Matrix<Template>::Matrix(int rows, int cols, Template elem)
 {
 	this->nRows = rows;
 	this->nCols = cols;
 
-	this->m = new double *[rows];
+	this->m = new Template *[rows];
 	for (int i = 0; i < rows; i++)
 	{
-		this->m[i] = new double[cols];
+		this->m[i] = new Template[cols];
 		for (int j = 0; j < cols; j++)
 			this->m[i][j] = elem;
 	}
 }
 
-Matrix::Matrix(int rows, int cols)
-{
+template<class Template>
+Matrix<Template>::Matrix(int rows, int cols) {
 	this->nRows = rows;
 	this->nCols = cols;
-
-	this->m = new double *[rows];
-	for (int i = 0; i < rows; i++)
-	{
-		this->m[i] = new double[cols];
-		for (int j = 0; j < cols; j++)
-			this->m[i][j] = 0.0;
-	}
+	this->m = new Template*[rows];
+  for (int i = 0; i < eows; i++) {
+    this->m[i] = new Template[cols];
+  }
 }
 
 // destrutor
-Matrix::~Matrix() {
+template<class Template>
+Matrix<Template>::~Matrix() {
   
 }
 
+
 // obtem o numero de linhas
-int Matrix::getRows() const {
-    return this->nRows;
+template<class Template>
+int Matrix<Template>::getRows() const {
+  return this->nRows;
 }
 
 // obtem o numero de colunas
-int Matrix::getCols() const {
+template<class Template>
+int Matrix<Template>::getCols() const {
   return this->nCols;
 }
 
 // retorna uma matriz transposta
-Matrix Matrix::transpose() {
-  Matrix matrix = Matrix(this->nCols, this->nRows, 0.0);
+template<class Template>
+Matrix<Template> Matrix<Template>::transpose() {
+  Matrix<Template> matrix = *this;
 
   for (int i = 0; i < this->nRows; i++) {
     for (int j = 0; j < this->nCols; j++) {
@@ -69,7 +73,8 @@ Matrix Matrix::transpose() {
 }
 
 // imprime o conteudo da matriz
-void Matrix::print() const {
+template<class Template>
+void Matrix<Template>::print() const {
     for (int i = 0; i < this->nRows; i++) {
       for (int j = 0; j < this->nCols; j++) {
         cout << this->m[i][j] << " ";
@@ -78,7 +83,8 @@ void Matrix::print() const {
   } 
 }
 
-void change(double num, Matrix m) {
+template<class Template>
+void change(double num, Matrix<Template> m) {
   for (int i = 0; i < m.getRows(); i++) {
       for (int j = 0; j < m.getCols(); j++) {
         m.m[i][j] = num;
@@ -86,48 +92,79 @@ void change(double num, Matrix m) {
   } 
 }
 
-void Matrix::unit() {
+template<>
+void Matrix<double>::unit() {
   if (this->getCols() == this->getRows()) {
     change(0.0, *this);
     for (int i = 0; i < this->getRows(); i++) {
         for (int j = 0; j < this->getCols(); j++) {
-          if (i == j) {
-            this->m[i][j] = 1.0;
-          }
+          if (i == j) this->m[i][j] = 1.0;
         }
       } 
     }
-    else {
-      cout << "A matrix precisa ser quadrada para ser transformada em identidade" << endl;
-    }
+    else cout << "A matrix precisa ser quadrada para ser transformada em identidade" << endl;
 }
 
-void Matrix::ones() {
+template<>
+void Matrix<double>::ones() {
   change(1.0, *this);
 }
 
-void Matrix::zeros() {
+template<>
+void Matrix<double>::zeros() {
   change(0.0, *this);
 }
 
-double Matrix::get(int row, int col) const {
-  if (row >= 1 && col >= 1) {
-    return this->m[row - 1][col - 1];
-  }
+template<>
+void Matrix<int>::unit() {
+  if (this->getCols() == this->getRows()) {
+    change(0.0, *this);
+    for (int i = 0; i < this->getRows(); i++) {
+        for (int j = 0; j < this->getCols(); j++) {
+          if (i == j) this->m[i][j] = 1;
+        }
+      } 
+    }
+    else cout << "A matrix precisa ser quadrada para ser transformada em identidade" << endl;
+}
+
+template<>
+void Matrix<int>::ones() {
+  change(1.0, *this);
+}
+
+template<>
+void Matrix<int>::zeros() {
+  change(0.0, *this);
+}
+
+template<class Template>
+void Matrix<Template>::unit() {
+  cout << "A matrix deve ser composta por números" << endl;
+}
+
+template<class Template>
+void Matrix<Template>::ones() {
+  cout << "A matrix deve ser composta por números" << endl;
+}
+
+template<class Template>
+void Matrix<Template>::zeros() {
+  cout << "A matrix deve ser composta por números" << endl;
+}
+
+template<class Template>
+Template Matrix<Template>::get(int row, int col) const {
+  if (row >= 1 && col >= 1) return this->m[row - 1][col - 1];
   else {
     cout << "Essa linha nao existe";
-    return 0.0;
+    return new Template();
   }
 }
 
-Matrix Matrix::operator- (const Matrix& m) {
-  Matrix m1 = Matrix(this->getRows(), this->getCols());
-
-  for (int i = 0; i < m1.getRows(); i++) {
-      for (int j = 0; j < m1.getCols(); j++) {
-        m1.m[i][j] = this->m[i][j];
-    } 
-  }
+template<class Template>
+Matrix<Template> Matrix<Template>::operator- (const Matrix<Template>& m) {
+  Matrix<Template> m1 = copy(this);
   for (int i = 0; i < m1.getRows(); i++) {
       for (int j = 0; j < m1.getCols(); j++) {
         m1.m[i][j] -= m.m[i][j];
@@ -136,20 +173,14 @@ Matrix Matrix::operator- (const Matrix& m) {
   return m1;
 }
 
-Matrix Matrix::operator-= (const Matrix& m) {
-  *this = *this - m;
-  return *this;
+template<class Template>
+Matrix<Template> Matrix<Template>::operator-= (const Matrix<Template>& m) {
+  return *this - m;
 }
 
-Matrix Matrix::operator+ (const Matrix& m) {
-  Matrix m1 = Matrix(this->getRows(), this->getCols());
-
-  for (int i = 0; i < m1.getRows(); i++) {
-      for (int j = 0; j < m1.getCols(); j++) {
-        m1.m[i][j] = this->m[i][j];
-    } 
-  }
-
+template<class Template>
+Matrix<Template> Matrix<Template>::operator+ (const Matrix<Template>& m) {
+  Matrix m1 = copy(this);
   for (int i = 0; i < m1.getRows(); i++) {
       for (int j = 0; j < m1.getCols(); j++) {
         m1.m[i][j] += m.m[i][j];
@@ -158,20 +189,15 @@ Matrix Matrix::operator+ (const Matrix& m) {
   return m1;
 }
 
-Matrix Matrix::operator+= (const Matrix& m) {
-  *this = *this + m;
-  return *this;
+template<class Template>
+Matrix<Template> Matrix<Template>::operator+= (const Matrix<Template>& m) {
+  return *this + m;
 }
 
-Matrix Matrix::operator* (const Matrix& m) {
-  Matrix m1 = Matrix(this->getRows(), this->getCols());
-  Matrix result = Matrix(this->getRows(), m.getCols());
-  
-  for (int i = 0; i < m1.getRows(); i++) {
-      for (int j = 0; j < m1.getCols(); j++) {
-        m1.m[i][j] = this->m[i][j];
-    } 
-  }
+template<class Template>
+Matrix<Template> Matrix<Template>::operator* (const Matrix<Template>& m) {
+  Matrix m1 = copy(this);
+  Matrix<Template> result = Matrix(this->getRows(), m.getCols());
   
   for(int i = 0; i < this->getRows(); ++i)
     for(int j = 0; j < m.getCols(); ++j)
@@ -182,7 +208,8 @@ Matrix Matrix::operator* (const Matrix& m) {
   return result;
 }
 
-Matrix Matrix::operator* (const int& num) {
+template<class Template>
+Matrix<Template> Matrix<Template>::operator* (const int& num) {
   Matrix m = Matrix(this->getRows(), this->getCols());
   for (int i = 0; i < m.getRows(); i++) {
       for (int j = 0; j < m.getCols(); j++) {
@@ -192,18 +219,20 @@ Matrix Matrix::operator* (const int& num) {
   return m;
 }
 
-
-Matrix Matrix::operator*= (const Matrix& m) {
-  *this = *this * m;
-  return *this;
+template<class Template>
+Matrix<Template> Matrix<Template>::operator*= (const Matrix<Template>& m) {
+  return *this * m;
 }
 
-Matrix Matrix::operator*= (const int& num) {
-  *this = *this * num;
-  return *this;
+
+template<class Template>
+Matrix<Template> Matrix<Template>::operator*= (const int& num) {
+  return *this * num;
 }
 
-bool Matrix::operator== (const Matrix& m) { 
+
+template<class Template>
+bool Matrix<Template>::operator== (const Matrix<Template>& m) { 
   if (this->getCols() == m.getCols() && this->getRows() == m.getRows()) {
     for (int i = 0; i < this->getRows(); i++) {
       for (int j = 0; j < this->getCols(); j++) {
@@ -211,22 +240,22 @@ bool Matrix::operator== (const Matrix& m) {
     } 
   }
   return true;
-  } else {
-    return false;
-  }
-
+  } else return false;
 }
 
-bool Matrix::operator!= (const Matrix& m) {
+template<class Template>
+bool Matrix<Template>::operator!= (const Matrix<Template>& m) {
   return !(*this == m);
 }
 
-std::ostream& operator<< (std::ostream& out, const Matrix& m) {
+template<class Template>
+std::ostream& operator<< (std::ostream& out, const Matrix<Template>& m) {
   m.print();
   return out;
 }
 
-std::istream& operator>> (std::istream& in, const Matrix& m) {
+template<class Template>
+std::istream& operator>> (std::istream& in, const Matrix<Template>& m) {
   for (int i = 0; i < m.getRows(); i++) {
     for (int j = 0; j < m.getCols(); j++) {
       in >> m.m[i][j];
@@ -235,25 +264,33 @@ std::istream& operator>> (std::istream& in, const Matrix& m) {
   return in;
 }
 
-Matrix Matrix::operator~ () {
-  Matrix m = Matrix(this->getRows(), this->getCols());
-  for (int i = 0; i < this->getRows(); i++) {
-      for (int j = 0; j < this->getCols(); j++) {
-        m.m[i][j] = this->m[i][j];
-    } 
-  }
+template<class Template>
+Matrix<Template> Matrix<Template>::operator~ () {
+  Matrix<Template> m = copy(this);
   return m.transpose();
 }
 
-double& Matrix::operator() (const int row, const int col) {
+template<class Template>
+Template& Matrix<Template>::operator() (const int row, const int col) {
   return this->m[row][col];
+}
+
+template<class Template>
+Matrix<Template> copy(Matrix<Template> m) {
+  Matrix<Template> m1(m.getRows(), m.getCols())
+  for (int i = 0; i < m.getRows(); i++){
+    for (int j = 0; j < m.getCols(); j++) {
+      m1[i][j] = m[i][j];
+    }
+  }
+  return m1;
 }
 
 int main()
 {
-    Matrix Y, W;
-    Matrix X(3,1), A(3,3), C(3,3);
-    Matrix Z(3,2,7.0);
+    Matrix<double> Y, W;
+    Matrix<double> X(3,1), A(3,3), C(3,3);
+    Matrix<double> Z(3,2,7.0);
     
     // operadores a serem implementados em sua classe:
     
