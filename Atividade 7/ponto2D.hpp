@@ -14,6 +14,7 @@ class Ponto2D {
     double get_x(void) { return x; }
     double get_y(void) { return y; }
     void set (double nx, double ny) { x=nx; y=ny; }
+    double dist(Ponto2D p);
     
   private:                
     double x;
