@@ -1,0 +1,8 @@
+1) É possível adicionar uma função membro na classe Derived que chama a função read()?
+Reposta: Sim, funções privates podem ser acessadas pela subclasse
+
+2) É possível chamar a função read() a partir de um objeto do tipo Derived?
+Resposta: Sim, quando isso acontece, o que muda são os membros public da Base que se tornam protected
+
+3) É possível chamar a função read() a partir de um objeto do tipo Derived?
+Respota: Não, só é possível chamar funções public
