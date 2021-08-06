@@ -1,8 +1,14 @@
 1) É possível adicionar uma função membro na classe Derived que chama a função read()?
-Reposta: Sim, funções privates podem ser acessadas pela subclasse
+Reposta: Sim, funções protected da superclasse podem ser acessadas pela subclasse
 
 2) É possível chamar a função read() a partir de um objeto do tipo Derived?
 Resposta: Sim, quando isso acontece, o que muda são os membros public da Base que se tornam protected
 
 3) É possível chamar a função read() a partir de um objeto do tipo Derived?
 Respota: Não, só é possível chamar funções public
+
+4) É possível chamar read() a partir de uma função membro da classe Derived2? E o método value()?
+Resposta: Na herança de Derived todos os métodos public da Base são transformados em protected.
+          Na herança da Derived para Derived2 todos os métodos protected são mantidos como protected.
+          Portanto, a respota é sim pois é possível chamar métodos protected de uma superclasse dentro de uma subclasse
+          
